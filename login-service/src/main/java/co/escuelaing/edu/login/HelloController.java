@@ -10,7 +10,7 @@ public class HelloController {
     @Autowired
     private SecureServiceCaller serviceCaller;
 
-    @GetMapping("/")
+    @GetMapping("/greeting")
     public String index() {
         return "Greetings from Login Service (HTTPS)!";
     }
