@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure App</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: Arial, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 { color: #333; margin-bottom: 1.5rem; text-align: center; font-size: 1.5rem; }
+        .form-group { margin-bottom: 1rem; }
+        label { display: block; margin-bottom: 0.4rem; color: #555; font-size: 0.9rem; }
+        input {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            outline: none;
+        }
+        input:focus { border-color: #4a90e2; }
+        button {
+            width: 100%;
+            padding: 0.75rem;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+        button:hover { background: #357abd; }
+        button:disabled { background: #aaa; cursor: not-allowed; }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            display: none;
+        }
+        .result.success { background: #e6f4ea; color: #2e7d32; border: 1px solid #a5d6a7; }
+        .result.error { background: #fdecea; color: #c62828; border: 1px solid #ef9a9a; }
+        .buttons { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+        .buttons button { margin-top: 0; }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { background: #545b62; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔒 Secure App Login</h1>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter username" value="admin"/>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter password" value="secret"/>
+        </div>
+
+        <div class="buttons">
+            <button onclick="callHello()">Hello</button>
+            <button class="btn-secondary" onclick="callOtherService()">Call Other Service</button>
+        </div>
+
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function getHeaders() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const credentials = btoa(username + ':' + password);
+            return {
+                'Authorization': 'Basic ' + credentials,
+                'Content-Type': 'application/json'
+            };
+        }
+
+        function showResult(message, isError = false) {
+            const result = document.getElementById('result');
+            result.textContent = message;
+            result.className = 'result ' + (isError ? 'error' : 'success');
+            result.style.display = 'block';
+        }
+
+        async function callHello() {
+            try {
+                const response = await fetch('/hello', {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                if (response.ok) {
+                    const text = await response.text();
+                    showResult('✅ ' + text);
+                } else {
+                    showResult('❌ Invalid credentials (HTTP ' + response.status + ')', true);
+                }
+            } catch (error) {
+                showResult('❌ Error: ' + error.message, true);
+            }
+        }
+
+        async function callOtherService() {
+            try {
+                const response = await fetch('/call', {
+                    method: 'GET',
+                    headers: getHeaders()
+                });
+                if (response.ok) {
+                    const text = await response.text();
+                    showResult('✅ ' + text);
+                } else {
+                    showResult('❌ Invalid credentials (HTTP ' + response.status + ')', true);
+                }
+            } catch (error) {
+                showResult('❌ Error: ' + error.message, true);
+            }
+        }
+    </script>
+</body>
+</html>
