@@ -43,12 +43,13 @@ public class SecureServiceCaller {
         sslContext.init(null, tmf.getTrustManagers(), null);
         SSLContext.setDefault(sslContext);
 
-        return readUrl("https://localhost:6000/data");
+        return readUrl("https://danieltdseother.duckdns.org:8443/data");
     }
 
     private String readUrl(String urlStr) throws Exception {
         URL url = new URL(urlStr);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
+        con.setHostnameVerifier((hostname, session) -> true);
         try (BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()))) {
             StringBuilder sb = new StringBuilder();
             String line;
